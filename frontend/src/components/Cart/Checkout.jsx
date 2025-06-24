@@ -1,9 +1,9 @@
 import { createCheckout } from "@redux/slices/checkoutSlice";
 import axios from "axios";
+import PayPalButton from "components/Cart/PaypalButton";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import PayPalButton from "./PaypalButton";
 
 const Checkout = () => {
   const navigate = useNavigate();
