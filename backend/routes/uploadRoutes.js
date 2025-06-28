@@ -27,13 +27,16 @@ router.post("/", upload.single("image"), async (req, res) => {
     // Function to handle the stream upload to Cloudinary
     const streamUpload = fileBuffer => {
       return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream((error, result) => {
-          if (result) {
-            resolve(result);
-          } else {
-            reject(error);
-          }
-        });
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "duy_image" },
+          (error, result) => {
+            if (result) {
+              resolve(result);
+            } else {
+              reject(error);
+            }
+          },
+        );
 
         // Use streamifier to convert file buffer to a stream
         streamifier.createReadStream(fileBuffer).pipe(stream);
@@ -44,7 +47,20 @@ router.post("/", upload.single("image"), async (req, res) => {
     const result = await streamUpload(req.file.buffer);
 
     // Respond with the uploaded image URL
-    res.json({ url: result.secure_url });
+    res.json({ url: result.secure_url, public_id: result.public_id });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.delete("/", async (req, res) => {
+  try {
+    const { public_id } = req.body;
+    if (!public_id)
+      return res.status(400).json({ message: "No public_id provided" });
+    await cloudinary.uploader.destroy(public_id);
+    res.json({ message: "Image deleted" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

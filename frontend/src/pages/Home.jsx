@@ -1,5 +1,6 @@
 import { fetchProductsByFilters } from "@redux/slices/productsSlide";
 import axios from "axios";
+import Loader from "components/Common/Loader";
 import Hero from "components/Layout/Hero";
 import FeaturedCollection from "components/Products/FeaturedCollection";
 import FeaturesSection from "components/Products/FeaturesSection";
@@ -51,7 +52,7 @@ const Home = () => {
       {bestSellerProduct ? (
         <ProductDetails productId={bestSellerProduct._id} />
       ) : (
-        <p className="text-center">Loading best seller product...</p>
+        <Loader />
       )}
 
       <div className="container mx-auto">

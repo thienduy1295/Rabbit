@@ -29,70 +29,69 @@ const Navbar = () => {
   };
   return (
     <>
-      <nav className="container mx-auto flex items-center justify-between px-6 py-4">
-        <div>
-          <Link to="/" className="text-2xl font-medium">
-            Rabbit
-          </Link>
-        </div>
-        <div className="hidden space-x-6 md:flex">
-          <Link
-            to="/collections/all?gender=Men"
-            className="text-sm font-medium text-gray-700 uppercase hover:text-black"
-          >
-            Men
-          </Link>
-          <Link
-            to="/collections/all?gender=Women"
-            className="text-sm font-medium text-gray-700 uppercase hover:text-black"
-          >
-            Women
-          </Link>
-          <Link
-            to="/collections/all?category=Top Wear"
-            className="text-sm font-medium text-gray-700 uppercase hover:text-black"
-          >
-            Top Wear
-          </Link>
-          <Link
-            to="/collections/all?category=Bottom Wear"
-            className="text-sm font-medium text-gray-700 uppercase hover:text-black"
-          >
-            Bottom Wear
-          </Link>
-        </div>
-        {/* Right - Icons */}
-        <div className="flex items-center space-x-4">
-          {user && user.role === "admin" && (
-            <Link
-              to="/admin"
-              className="block rounded bg-black px-2 text-sm text-white"
-            >
-              Admin
+      <nav className="sticky top-0 z-40 bg-white/80 shadow-sm backdrop-blur-md transition">
+        <div className="container mx-auto flex items-center justify-between px-6 py-4">
+          <div>
+            <Link to="/" className="text-2xl font-medium">
+              Rabbit
             </Link>
-          )}
-          <Link to="/profile" className="hover:text-black">
-            <HiOutlineUser className="size-6 text-gray-700" />
-          </Link>
-          <button
-            className="relative hover:text-black"
-            onClick={toggleCartDrawer}
-          >
-            <HiOutlineShoppingBag className="size-6 text-gray-700" />
-            {cartItemCount > 0 && (
-              <span className="bg-rabbit-red absolute -top-1 rounded-full px-2 py-0.5 text-xs text-white">
-                {cartItemCount}
-              </span>
-            )}
-          </button>
-          {/* Search */}
-          <div className="overflow-hidden">
-            <SearchBar />
           </div>
-
-          <button className="md:hidden" onClick={toggleNavDrawer}>
-            <HiBars3BottomRight className="size-6 text-gray-700" />
-          </button>
+          <div className="hidden space-x-6 md:flex">
+            <Link
+              to="/collections/all?gender=Men"
+              className="text-sm font-medium text-gray-700 uppercase hover:text-black"
+            >
+              Men
+            </Link>
+            <Link
+              to="/collections/all?gender=Women"
+              className="text-sm font-medium text-gray-700 uppercase hover:text-black"
+            >
+              Women
+            </Link>
+            <Link
+              to="/collections/all?category=Top Wear"
+              className="text-sm font-medium text-gray-700 uppercase hover:text-black"
+            >
+              Top Wear
+            </Link>
+            <Link
+              to="/collections/all?category=Bottom Wear"
+              className="text-sm font-medium text-gray-700 uppercase hover:text-black"
+            >
+              Bottom Wear
+            </Link>
+          </div>
+          {/* Right - Icons */}
+          <div className="flex items-center gap-4">
+            {user && user.role === "admin" && (
+              <Link
+                to="/admin"
+                className="rounded-full bg-gradient-to-r from-black to-gray-800 px-4 py-1 text-sm font-semibold text-white shadow transition hover:from-gray-800 hover:to-black"
+              >
+                Admin
+              </Link>
+            )}
+            <Link to="/profile" className="group relative">
+              <HiOutlineUser className="size-7 text-gray-700 transition group-hover:text-black" />
+              {/* Optionally, show avatar or initials here */}
+            </Link>
+            <button className="group relative" onClick={toggleCartDrawer}>
+              <HiOutlineShoppingBag className="size-7 text-gray-700 transition group-hover:text-black" />
+              {cartItemCount > 0 && (
+                <span className="bg-rabbit-red absolute -top-2 -right-2 animate-bounce rounded-full px-2 py-0.5 text-xs text-white shadow-lg">
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
+            {/* Search */}
+            <div className="overflow-hidden rounded-full bg-white px-2 py-1 shadow">
+              <SearchBar />
+            </div>
+            <button className="md:hidden" onClick={toggleNavDrawer}>
+              <HiBars3BottomRight className="size-7 text-gray-700 transition hover:text-black" />
+            </button>
+          </div>
         </div>
       </nav>
       <CartDrawer drawerOpen={drawerOpen} toggleCartDrawer={toggleCartDrawer} />

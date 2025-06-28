@@ -3,6 +3,8 @@ import {
   fetchProductDetails,
   fetchSimilarProducts,
 } from "@redux/slices/productsSlide";
+import ErrorAlert from "components/Common/ErrorAlert";
+import Loader from "components/Common/Loader";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -72,11 +74,11 @@ const ProductDetails = ({ productId }) => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <Loader />;
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return <ErrorAlert message={error} />;
   }
 
   return (

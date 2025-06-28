@@ -4,6 +4,8 @@ import {
   fetchUsers,
   updateUser,
 } from "@redux/slices/adminSlice";
+import ErrorAlert from "components/Common/ErrorAlert";
+import Loader from "components/Common/Loader";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -64,8 +66,8 @@ const UserManagement = () => {
   return (
     <div className="mx-auto max-w-7xl p-6">
       <h2 className="mb-6 text-2xl font-bold">User Management</h2>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
+      {loading && <Loader />}
+      {error && <ErrorAlert message={error} />}
       {/* Add New User Form */}
       <div className="mb-6 rounded-lg p-6">
         <h3 className="mb-4 text-lg font-bold">Add New User</h3>

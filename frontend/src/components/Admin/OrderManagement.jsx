@@ -2,6 +2,7 @@ import {
   fetchAllOrders,
   updateOrderStatus,
 } from "@redux/slices/adminOrderSlice";
+import Loader from "components/Common/Loader";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +27,7 @@ const OrderManagement = () => {
   };
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <Loader />;
   }
   if (error) {
     return <p>Error: {error}</p>;

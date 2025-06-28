@@ -19,7 +19,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 
 import store from "@redux/store";
+import CreateProductPage from "components/Admin/CreateProductPage";
 import ProtectedRoute from "components/Common/ProtectedRoute";
+import NotFound from "pages/NotFound";
 import { Provider } from "react-redux";
 
 function App() {
@@ -30,6 +32,7 @@ function App() {
       >
         <Toaster position="top-right" />
         <Routes>
+          <Route path="*" element={<NotFound />} />
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Home />} />
             <Route path="login" element={<Login />} />
@@ -60,6 +63,7 @@ function App() {
             <Route path="users" element={<UserManagement />} />
             <Route path="products" element={<ProductManagement />} />
             <Route path="products/:id/edit" element={<EditProductPage />} />
+            <Route path="products/add" element={<CreateProductPage />} />
             <Route path="orders" element={<OrderManagement />} />
           </Route>
         </Routes>

@@ -1,27 +1,21 @@
-import { updateProduct } from "@redux/slices/adminProductSlice";
-import { fetchProductDetails } from "@redux/slices/productsSlide";
+import { createProduct } from "@redux/slices/adminProductSlice";
 import axios from "axios";
-import ErrorAlert from "components/Common/ErrorAlert";
-import Loader from "components/Common/Loader";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   HiOutlineCloudUpload,
-  HiOutlinePencil,
+  HiOutlinePlus,
   HiOutlineTrash,
 } from "react-icons/hi";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { toast } from "sonner";
 
-const EditProductPage = () => {
+const CreateProductPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { id } = useParams();
-  const { selectedProduct, loading, error } = useSelector(
-    state => state.products,
-  );
-  const { loading: adminLoading } = useSelector(state => state.adminProducts);
+
+  const { loading } = useSelector(state => state.adminProducts);
 
   const [productData, setProductData] = useState({
     name: "",
@@ -29,35 +23,18 @@ const EditProductPage = () => {
     price: 0,
     countInStock: 0,
     sku: "",
-    category: "",
+    category: "Top Wear",
     brand: "",
     sizes: [],
     colors: [],
     collections: "",
     material: "",
-    gender: "",
+    gender: "Men",
     images: [],
   });
-
-  // New state for local preview and files to upload
-  const [localImages, setLocalImages] = useState([]); // Array of preview URLs
-  const [newImages, setNewImages] = useState([]); // Array of File objects
-  const [uploading, setUploading] = useState(false); // Image uploading state
-  const [deletedImages, setDeletedImages] = useState([]); // Track images to delete
-
-  useEffect(() => {
-    if (id) {
-      dispatch(fetchProductDetails(id));
-    }
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    if (selectedProduct) {
-      setProductData(selectedProduct);
-      setLocalImages([]); // Reset local previews when product changes
-      setNewImages([]); // Reset new images
-    }
-  }, [selectedProduct]);
+  const [localImages, setLocalImages] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -67,7 +44,6 @@ const EditProductPage = () => {
     }));
   };
 
-  // Only preview locally, don't upload yet
   const handleImageChange = e => {
     const file = e.target.files[0];
     if (file) {
@@ -76,19 +52,16 @@ const EditProductPage = () => {
     }
   };
 
+  const handleDeleteLocalImage = index => {
+    setLocalImages(prev => prev.filter((_, i) => i !== index));
+    setNewImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     setUploading(true);
 
     try {
-      // 1. Delete images from Cloudinary
-      for (const public_id of deletedImages) {
-        await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/upload`, {
-          data: { public_id },
-        });
-      }
-
-      // 2. Upload new images to Cloudinary
       let uploadedImages = [];
       for (const file of newImages) {
         const formData = new FormData();
@@ -105,29 +78,26 @@ const EditProductPage = () => {
         });
       }
 
-      // 3. Merge with existing images
-      const updatedProductData = {
+      const newProductData = {
         ...productData,
         images: [...productData.images, ...uploadedImages],
       };
 
-      const result = await dispatch(
-        updateProduct({ id, productData: updatedProductData }),
-      );
+      const result = await dispatch(createProduct(newProductData));
 
-      if (updateProduct.fulfilled.match(result)) {
-        toast.success("Product updated successfully!", {
+      if (createProduct.fulfilled.match(result)) {
+        toast.success("Product created successfully!", {
           duration: 3000,
         });
         navigate("/admin/products");
-      } else if (updateProduct.rejected.match(result)) {
-        toast.error("Failed to update product. Please try again.", {
+      } else if (createProduct.rejected.match(result)) {
+        toast.error("Failed to create product. Please try again.", {
           duration: 4000,
         });
       }
     } catch (error) {
       toast.error(
-        `An error occurred while updating product. ${error.message}`,
+        `An error occurred while uploading images or creating product. ${error.message}`,
         {
           duration: 4000,
         },
@@ -137,38 +107,17 @@ const EditProductPage = () => {
     }
   };
 
-  const handleDeleteExistingImage = index => {
-    const imageToDelete = productData.images[index];
-    if (imageToDelete.public_id) {
-      setDeletedImages(prev => [...prev, imageToDelete.public_id]);
-    }
-    setProductData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleDeleteLocalImage = index => {
-    setLocalImages(prev => prev.filter((_, i) => i !== index));
-    setNewImages(prev => prev.filter((_, i) => i !== index));
-  };
-
-  if (loading) {
-    return <Loader />;
-  }
-  if (error) {
-    return <ErrorAlert message={error} />;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-3xl">
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Add New Product
+            </h1>
             <p className="mt-2 text-sm text-gray-600">
-              Update the details below to edit this product.
+              Fill in the details below to add a new product to your catalog.
             </p>
           </div>
         </div>
@@ -373,24 +322,22 @@ const EditProductPage = () => {
                 Upload Images
               </label>
               <div className="flex flex-wrap gap-4">
-                {/* Existing images from productData */}
-                {productData.images.map((image, index) => (
-                  <div key={index} className="group relative">
-                    <img
-                      src={image.url}
-                      alt={image.altText || "Product Image"}
-                      className="size-20 rounded-md border-2 border-dashed border-blue-400 object-cover shadow-md"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteExistingImage(index)}
-                      className="absolute top-1 right-1 rounded-full bg-white/80 p-1 text-red-500 opacity-0 transition group-hover:opacity-100"
-                      title="Delete"
-                    >
-                      <HiOutlineTrash size={18} />
-                    </button>
-                  </div>
-                ))}
+                <label
+                  htmlFor="product-image-upload"
+                  className="flex h-32 w-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 transition hover:bg-blue-100"
+                >
+                  <HiOutlineCloudUpload className="mb-2 text-3xl text-blue-500" />
+                  <span className="font-medium text-blue-700">
+                    Choose Image
+                  </span>
+                  <input
+                    id="product-image-upload"
+                    type="file"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                </label>
                 {/* Local previews for new images */}
                 {localImages.map((src, index) => (
                   <div key={"local-" + index} className="group relative">
@@ -409,37 +356,20 @@ const EditProductPage = () => {
                     </button>
                   </div>
                 ))}
-                {/* Upload button */}
-                <label
-                  htmlFor="product-image-upload"
-                  className="flex h-32 w-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 transition hover:bg-blue-100"
-                >
-                  <HiOutlineCloudUpload className="mb-2 text-3xl text-blue-500" />
-                  <span className="font-medium text-blue-700">
-                    Choose Image
-                  </span>
-                  <input
-                    id="product-image-upload"
-                    type="file"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    accept="image/*"
-                  />
-                </label>
               </div>
             </div>
 
             <button
               type="submit"
               className="flex w-full items-center justify-center rounded-md bg-blue-600 py-2 font-semibold text-white transition-colors hover:bg-blue-700"
-              disabled={uploading || adminLoading}
+              disabled={uploading || loading}
             >
-              {uploading || adminLoading ? (
+              {uploading || loading ? (
                 <ClipLoader size={22} color="#fff" />
               ) : (
                 <>
-                  <HiOutlinePencil className="mr-2 h-5 w-5" />
-                  Update Product
+                  <HiOutlinePlus className="mr-2 h-5 w-5" />
+                  Add Product
                 </>
               )}
             </button>
@@ -450,4 +380,4 @@ const EditProductPage = () => {
   );
 };
 
-export default EditProductPage;
+export default CreateProductPage;

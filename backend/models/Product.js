@@ -63,6 +63,9 @@ const productSchema = new mongoose.Schema(
         altText: {
           type: String,
         },
+        public_id: {
+          type: String,
+        },
       },
     ],
     isFeatured: {

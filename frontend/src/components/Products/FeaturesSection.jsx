@@ -4,40 +4,42 @@ import {
   HiShoppingBag,
 } from "react-icons/hi2";
 
+const features = [
+  {
+    icon: <HiShoppingBag className="text-4xl text-green-600" />,
+    title: "FREE INTERNATIONAL SHIPPING",
+    desc: "On all orders over $100.00",
+  },
+  {
+    icon: <HiArrowPathRoundedSquare className="text-4xl text-blue-600" />,
+    title: "45 DAYS RETURN",
+    desc: "Money back guarantee",
+  },
+  {
+    icon: <HiOutlineCreditCard className="text-4xl text-yellow-600" />,
+    title: "SECURE CHECKOUT",
+    desc: "100% secure checkout process",
+  },
+];
+
 const FeaturesSection = () => {
   return (
-    <section className="bg-white px-4 py-16">
-      <div className="container mx-auto grid grid-cols-1 gap-8 text-center md:grid-cols-3">
-        {/* Feature 1 */}
-        <div className="flex flex-col items-center">
-          <div className="mb-4 rounded-full p-4">
-            <HiShoppingBag className="text-xl" />
+    <section className="bg-gradient-to-br from-gray-50 to-white px-4 py-20">
+      <div className="container mx-auto grid grid-cols-1 gap-8 md:grid-cols-3">
+        {features.map((feature, idx) => (
+          <div
+            key={idx}
+            className="flex flex-col items-center rounded-2xl bg-white p-8 shadow-lg transition-transform duration-300 hover:-translate-y-2 hover:shadow-2xl"
+          >
+            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 shadow-inner">
+              {feature.icon}
+            </div>
+            <h4 className="mb-2 text-lg font-bold tracking-tight text-gray-800">
+              {feature.title}
+            </h4>
+            <p className="text-base text-gray-500">{feature.desc}</p>
           </div>
-          <h4 className="mb-2 tracking-tighter">FREE INTERNATIONAL SHIPPING</h4>
-          <p className="text-sm tracking-tighter text-gray-600">
-            On all orders over $100.00
-          </p>
-        </div>
-        {/* Feature 2 */}
-        <div className="flex flex-col items-center">
-          <div className="mb-4 rounded-full p-4">
-            <HiArrowPathRoundedSquare className="text-xl" />
-          </div>
-          <h4 className="mb-2 tracking-tighter">45 DAYS RETURN</h4>
-          <p className="text-sm tracking-tighter text-gray-600">
-            Money back guarantee
-          </p>
-        </div>
-        {/* Feature 3 */}
-        <div className="flex flex-col items-center">
-          <div className="mb-4 rounded-full p-4">
-            <HiOutlineCreditCard className="text-xl" />
-          </div>
-          <h4 className="mb-2 tracking-tighter">SECURE CHECKOUT</h4>
-          <p className="text-sm tracking-tighter text-gray-600">
-            100% secure checkout process
-          </p>
-        </div>
+        ))}
       </div>
     </section>
   );

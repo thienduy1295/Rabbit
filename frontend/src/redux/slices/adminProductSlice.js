@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}`;
-const USER_TOKEN = `Bearer ${localStorage.getItem("userToken")}`;
 
 // Async thunk to fetch admin products
 export const fetchAdminProducts = createAsyncThunk(
@@ -10,7 +9,7 @@ export const fetchAdminProducts = createAsyncThunk(
   async () => {
     const response = await axios.get(`${API_URL}/api/admin/products`, {
       headers: {
-        Authorization: USER_TOKEN,
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
       },
     });
     return response.data;
@@ -26,7 +25,7 @@ export const createProduct = createAsyncThunk(
       productData,
       {
         headers: {
-          Authorization: USER_TOKEN,
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
         },
       },
     );
@@ -43,7 +42,7 @@ export const updateProduct = createAsyncThunk(
       productData,
       {
         headers: {
-          Authorization: USER_TOKEN,
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
         },
       },
     );
@@ -55,9 +54,9 @@ export const updateProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   "adminProducts/deleteProduct",
   async id => {
-    await axios.delete(`${API_URL}/api/products/${id}`, {
+    await axios.delete(`${API_URL}/api/admin/products/${id}`, {
       headers: {
-        Authorization: USER_TOKEN,
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
       },
     });
     return id;
@@ -86,12 +85,25 @@ const adminProductSlice = createSlice({
         state.error = action.error.message;
       })
       // Create product
+      .addCase(createProduct.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(createProduct.fulfilled, (state, action) => {
         state.loading = false;
         state.products.push(action.payload);
       })
+      .addCase(createProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
       // Update product
+      .addCase(updateProduct.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateProduct.fulfilled, (state, action) => {
+        state.loading = false;
         const index = state.products.findIndex(
           product => product._id === action.payload._id,
         );
@@ -99,11 +111,24 @@ const adminProductSlice = createSlice({
           state.products[index] = action.payload;
         }
       })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
       // Delete product
+      .addCase(deleteProduct.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.loading = false;
         state.products = state.products.filter(
           product => product._id !== action.payload,
         );
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 });

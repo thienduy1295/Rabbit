@@ -1,5 +1,6 @@
 import { loginUser } from "@redux/slices/authSlice";
 import { mergeCart } from "@redux/slices/cartSlice";
+import Loader from "components/Common/Loader";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -73,7 +74,7 @@ const Login = () => {
             type="submit"
             className="w-full rounded-lg bg-black p-2 font-semibold text-white transition hover:bg-gray-800"
           >
-            {loading ? "Loading..." : "Sign In"}
+            {loading ? <Loader /> : "Sign In"}
           </button>
           <p className="mt-6 text-center text-sm">
             Don&apos;t have an account?{" "}
