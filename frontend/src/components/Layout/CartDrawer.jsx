@@ -1,5 +1,18 @@
 import CartContent from "components/Cart/CartContent";
-import { IoMdClose } from "react-icons/io";
+import { Button } from "components/components/ui/button";
+import { Card, CardContent } from "components/components/ui/card";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "components/components/ui/sheet";
+import {
+  HiOutlineShieldCheck,
+  HiOutlineShoppingBag,
+  HiOutlineTruck,
+} from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -17,41 +30,131 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
       navigate("/checkout");
     }
   };
+
+  const calculateSubtotal = () => {
+    if (!cart?.products) return 0;
+    return cart.products.reduce((total, item) => {
+      const price = item.discountPrice || item.price;
+      return total + price * item.quantity;
+    }, 0);
+  };
+
+  const subtotal = calculateSubtotal();
+
   return (
-    <div
-      className={`fixed top-0 right-0 z-50 flex h-full w-3/4 transform flex-col bg-white shadow-lg transition-transform duration-300 sm:w-1/2 md:w-[30rem] ${drawerOpen ? "translate-x-0" : "translate-x-full"}`}
-    >
-      {/* Close Button */}
-      <div className="flex justify-end p-4">
-        <button onClick={toggleCartDrawer}>
-          <IoMdClose className="h-6 w-6 text-gray-600" />
-        </button>
-      </div>
-      <div className="flex-grow overflow-y-auto p-4">
-        <h2 className="mb-4 text-xl font-semibold">Your Cart</h2>
-        {cart && cart?.products?.length > 0 ? (
-          <CartContent cart={cart} userId={userId} guestId={guestId} />
-        ) : (
-          <p>Your cart is empty.</p>
-        )}
-      </div>
-      {/* Checkout button fixed at the bottom */}
-      <div className="sticky bottom-0 bg-white p-4">
-        {cart && cart?.products?.length > 0 && (
-          <>
-            <button
-              onClick={handleCheckout}
-              className="w-full rounded-lg bg-black py-3 font-semibold text-white transition hover:bg-gray-800"
-            >
-              Checkout
-            </button>
-            <p className="mt-2 text-center text-sm tracking-tighter text-gray-500">
-              Shipping, taxes, and discount codes calculated at checkout.
+    <Sheet open={drawerOpen} onOpenChange={toggleCartDrawer}>
+      <SheetContent side="right" className="z-[100] w-full sm:max-w-md">
+        <SheetHeader className="border-b pb-4">
+          <div className="flex items-center gap-2">
+            <HiOutlineShoppingBag className="h-6 w-6 text-blue-600" />
+            <SheetTitle className="text-xl">Shopping Cart</SheetTitle>
+          </div>
+          {cart?.products?.length > 0 && (
+            <p className="text-sm text-gray-600">
+              {cart.products.length} item{cart.products.length !== 1 ? "s" : ""}{" "}
+              in your cart
             </p>
-          </>
+          )}
+        </SheetHeader>
+
+        <div className="flex-1 overflow-y-auto">
+          {cart && cart?.products?.length > 0 ? (
+            <div className="py-4">
+              <CartContent cart={cart} userId={userId} guestId={guestId} />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="mb-4 rounded-full bg-gray-100 p-4">
+                <HiOutlineShoppingBag className="h-12 w-12 text-gray-400" />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                Your cart is empty
+              </h3>
+              <p className="mb-6 text-sm text-gray-500">
+                Looks like you haven't added any items to your cart yet.
+              </p>
+              <Button
+                onClick={toggleCartDrawer}
+                variant="outline"
+                className="w-full"
+              >
+                Continue Shopping
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {cart && cart?.products?.length > 0 && (
+          <SheetFooter className="border-t pt-4">
+            <div className="w-full space-y-4">
+              {/* Order Summary */}
+              <Card>
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">
+                        Subtotal
+                      </span>
+                      <span className="text-sm font-semibold">
+                        ${subtotal.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-gray-600">
+                        Shipping
+                      </span>
+                      <span className="text-sm text-green-600">Free</span>
+                    </div>
+                    <div className="border-t pt-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-base font-semibold">Total</span>
+                        <span className="text-lg font-bold text-gray-900">
+                          ${subtotal.toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Trust Indicators */}
+              <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+                <div className="flex items-center gap-1">
+                  <HiOutlineTruck className="h-4 w-4" />
+                  <span>Free Shipping</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <HiOutlineShieldCheck className="h-4 w-4" />
+                  <span>Secure Checkout</span>
+                </div>
+              </div>
+
+              {/* Checkout Button */}
+              <Button
+                onClick={handleCheckout}
+                className="w-full bg-blue-600 py-3 text-base font-semibold hover:bg-blue-700"
+                size="lg"
+              >
+                Proceed to Checkout
+              </Button>
+
+              {/* Additional Info */}
+              <div className="text-center">
+                <p className="text-xs text-gray-500">
+                  Shipping, taxes, and discount codes calculated at checkout.
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                  Need help?{" "}
+                  <span className="cursor-pointer text-blue-600 hover:underline">
+                    Contact us
+                  </span>
+                </p>
+              </div>
+            </div>
+          </SheetFooter>
         )}
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 };
 

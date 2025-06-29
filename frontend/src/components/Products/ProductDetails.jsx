@@ -5,6 +5,9 @@ import {
 } from "@redux/slices/productsSlide";
 import ErrorAlert from "components/Common/ErrorAlert";
 import Loader from "components/Common/Loader";
+import { Button } from "components/components/ui/button";
+import { Input } from "components/components/ui/input";
+import { Label } from "components/components/ui/label";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -84,27 +87,27 @@ const ProductDetails = ({ productId }) => {
   return (
     <div className="p-6">
       {selectedProduct && (
-        <div className="mx-auto max-w-6xl rounded-lg bg-white p-8">
-          <div className="flex flex-col md:flex-row">
+        <div className="mx-auto max-w-6xl rounded-xl bg-white p-0 md:p-8">
+          <div className="flex flex-col items-start gap-8 md:flex-row">
             {/* Left thumbnail */}
-            <div className="mr-6 hidden flex-col space-y-4 md:flex">
+            <div className="hidden flex-col space-y-4 md:flex">
               {selectedProduct.images.map((image, index) => (
                 <img
                   key={index}
                   src={image.url}
                   alt={image.altText || `Thumbnail ${index}`}
-                  className={`size-20 cursor-pointer rounded-lg border object-cover ${mainImage === image.url ? "border-black" : "border-gray-300"}`}
+                  className={`size-20 cursor-pointer rounded-lg border object-cover ${mainImage === image.url ? "border-primary" : "border-gray-300"}`}
                   onClick={() => setMainImage(image.url)}
                 />
               ))}
             </div>
             {/* Main Image */}
-            <div className="md:w-1/2">
-              <div className="mb-4">
+            <div className="flex items-center justify-center md:w-1/2">
+              <div className="w-full">
                 <img
                   src={mainImage}
                   alt="Main Product"
-                  className="h-auto w-full rounded-lg object-cover"
+                  className="h-[400px] w-full rounded-xl object-cover shadow-md"
                 />
               </div>
             </div>
@@ -115,86 +118,108 @@ const ProductDetails = ({ productId }) => {
                   key={index}
                   src={image.url}
                   alt={image.altText || `Thumbnail ${index}`}
-                  className={`size-20 cursor-pointer rounded-lg border object-cover ${mainImage === image.url ? "border-black" : "border-gray-300"}`}
+                  className={`size-20 cursor-pointer rounded-lg border object-cover ${mainImage === image.url ? "border-primary" : "border-gray-300"}`}
                   onClick={() => setMainImage(image.url)}
                 />
               ))}
             </div>
 
             {/* Right Side */}
-            <div className="md:ml-10 md:w-1/2">
-              <h1 className="mb-2 text-2xl font-semibold md:text-3xl">
+            <div className="flex flex-col justify-center md:ml-10 md:w-1/2">
+              <h1 className="text-primary mb-2 text-3xl font-bold">
                 {selectedProduct.name}
               </h1>
-
-              <p className="mb-1 text-lg text-gray-600 line-through">
+              <p className="mb-1 text-lg text-gray-400 line-through">
                 {selectedProduct.originalPrice &&
-                  `${selectedProduct.originalPrice}`}
+                  `$${selectedProduct.originalPrice}`}
               </p>
-              <p className="mb-2 text-xl text-gray-500">
-                $ {selectedProduct.price}
+              <p className="text-primary mb-2 text-2xl font-semibold">
+                ${selectedProduct.price}
               </p>
               <p className="mb-4 text-gray-600">
                 {selectedProduct.description}
               </p>
 
               <div className="mb-4">
-                <p className="text-gray-700">Color:</p>
+                <Label className="text-base">Color:</Label>
                 <div className="mt-2 flex gap-2">
                   {selectedProduct.colors.map(color => (
-                    <button
+                    <Button
                       key={color}
-                      className={`size-8 rounded-full border ${selectedColor === color ? "border-4 border-black" : "border-gray-300"}`}
-                      onClick={() => setSelectedColor(color)}
+                      type="button"
+                      variant={selectedColor === color ? "default" : "outline"}
+                      className={`size-8 rounded-full border-2 p-0 transition-colors`}
                       style={{
                         backgroundColor: color.toLocaleLowerCase(),
+                        borderColor:
+                          selectedColor === color
+                            ? "var(--primary)"
+                            : undefined,
                       }}
-                    ></button>
+                      onClick={() => setSelectedColor(color)}
+                      aria-label={color}
+                    />
                   ))}
                 </div>
               </div>
 
               <div className="mb-4">
-                <p className="text-gray-700">Size:</p>
+                <Label className="text-base">Size:</Label>
                 <div className="mt-2 flex gap-2">
                   {selectedProduct.sizes.map(size => (
-                    <button
-                      className={`rounded border border-gray-300 px-4 py-2 ${selectedSize === size ? "bg-black text-white" : ""}`}
+                    <Button
                       key={size}
+                      type="button"
+                      variant={selectedSize === size ? "default" : "outline"}
+                      className="rounded px-4 py-2"
                       onClick={() => setSelectedSize(size)}
                     >
                       {size}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
 
               <div className="mb-6">
-                <p className="text-gray-700">Quantity:</p>
-                <div className="mt-2 flex items-center space-x-4">
-                  <button
+                <Label className="text-base">Quantity:</Label>
+                <div className="mt-2 flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => handleQuantityChange("minus")}
-                    className="rounded bg-gray-200 px-2 py-1 text-lg"
+                    disabled={quantity <= 1}
+                    aria-label="Decrease quantity"
                   >
                     -
-                  </button>
-                  <span className="text-lg">{quantity}</span>
-                  <button
+                  </Button>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={quantity}
+                    readOnly
+                    className="w-16 text-center"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
                     onClick={() => handleQuantityChange("plus")}
-                    className="rounded bg-gray-200 px-2 py-1 text-lg"
+                    aria-label="Increase quantity"
                   >
                     +
-                  </button>
+                  </Button>
                 </div>
               </div>
 
-              <button
+              <Button
                 disabled={isButtonDisabled}
                 onClick={handleAddToCart}
-                className={`mb-4 w-full rounded bg-black px-6 py-2 text-white ${isButtonDisabled ? "cursor-not-allowed opacity-50" : "hover:bg-gray-900"}`}
+                className="mb-4 w-full text-lg font-semibold"
+                size="lg"
               >
                 {isButtonDisabled ? "Adding..." : "ADD TO CART"}
-              </button>
+              </Button>
 
               <div className="mt-10 text-gray-700">
                 <h3 className="mb-4 text-xl font-bold">Characteristics:</h3>

@@ -1,6 +1,17 @@
 import { loginUser } from "@redux/slices/authSlice";
 import { mergeCart } from "@redux/slices/cartSlice";
 import Loader from "components/Common/Loader";
+import { Button } from "components/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "components/components/ui/card";
+import { Input } from "components/components/ui/input";
+import { Label } from "components/components/ui/label";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -37,63 +48,74 @@ const Login = () => {
   };
 
   return (
-    <div className="flex">
-      <div className="flex w-full flex-col items-center justify-center p-8 md:w-1/2 md:p-12">
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-md rounded-lg border border-gray-300 bg-white p-8 shadow-sm"
-        >
-          <div className="mb-6 flex justify-center">
-            <h2 className="text-xl font-medium">Rabbit</h2>
-          </div>
-          <h2 className="mb-6 text-center text-2xl font-bold">Hey there! 👋</h2>
-          <p className="mb-6 text-center">
-            Enter your username and password to Login
-          </p>
-          <div className="mb-4">
-            <label className="mb-2 block text-sm font-semibold">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              className="w-full rounded border border-gray-300 p-2"
-              placeholder="Enter your email address"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="mb-2 block text-sm font-semibold">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              className="w-full rounded border border-gray-300 p-2"
-              placeholder="Enter your password"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-black p-2 font-semibold text-white transition hover:bg-gray-800"
-          >
-            {loading ? <Loader /> : "Sign In"}
-          </button>
-          <p className="mt-6 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link
-              to={`/register?redirect=${encodeURIComponent(redirect)}`}
-              className="text-blue-500"
-            >
-              Register
-            </Link>
-          </p>
-        </form>
-      </div>
-
-      <div className="hidden w-1/2 bg-gray-800 md:block">
-        <div className="flex h-full flex-col items-center justify-center">
+    <div className="bg-background flex min-h-screen items-center justify-center">
+      <div className="dark:bg-card flex w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-lg">
+        {/* Left: Login Form */}
+        <div className="flex flex-1 flex-col justify-center p-8 md:p-12">
+          <Card className="mx-auto w-full max-w-md border-none bg-transparent shadow-none">
+            <CardHeader className="mb-2">
+              <CardTitle className="text-primary text-center text-3xl font-bold">
+                Sign in to Buytopia
+              </CardTitle>
+              <CardDescription className="mt-2 text-center text-base">
+                Welcome back! Please enter your credentials to continue.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="mt-2 w-full"
+                  size="lg"
+                  disabled={loading}
+                >
+                  {loading ? <Loader /> : "Sign In"}
+                </Button>
+              </form>
+            </CardContent>
+            <CardFooter className="mt-2 flex flex-col items-center gap-2">
+              <p className="text-muted-foreground text-sm">
+                Don&apos;t have an account?{" "}
+                <Link
+                  to={`/register?redirect=${encodeURIComponent(redirect)}`}
+                  className="text-primary hover:text-primary/80 underline"
+                >
+                  Register
+                </Link>
+              </p>
+            </CardFooter>
+          </Card>
+        </div>
+        {/* Right: Image */}
+        <div className="bg-muted hidden items-center justify-center md:flex md:w-1/2">
           <img
             src={login}
             alt="Login to Account"
-            className="h-[750px] w-full object-cover"
+            className="h-full w-full rounded-r-xl object-cover"
           />
         </div>
       </div>

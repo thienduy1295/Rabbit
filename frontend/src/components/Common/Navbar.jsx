@@ -1,3 +1,11 @@
+import { Button } from "components/components/ui/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "components/components/ui/sheet";
 import CartDrawer from "components/Layout/CartDrawer";
 import { useState } from "react";
 import {
@@ -5,14 +13,12 @@ import {
   HiOutlineShoppingBag,
   HiOutlineUser,
 } from "react-icons/hi2";
-import { IoMdClose } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
 
 const Navbar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [navDrawerOpen, setNavDrawerOpen] = useState(false);
   const { cart } = useSelector(state => state.cart);
   const { user } = useSelector(state => state.auth);
 
@@ -20,44 +26,45 @@ const Navbar = () => {
     cart?.products?.reduce((total, product) => total + product.quantity, 0) ||
     0;
 
-  const toggleNavDrawer = () => {
-    setNavDrawerOpen(!navDrawerOpen);
-  };
-
   const toggleCartDrawer = () => {
     setDrawerOpen(!drawerOpen);
   };
   return (
     <>
-      <nav className="sticky top-0 z-40 bg-white/80 shadow-sm backdrop-blur-md transition">
-        <div className="container mx-auto flex items-center justify-between px-6 py-4">
+      <nav className="sm:-40 sticky top-0 z-40 w-full bg-white/80 shadow-sm backdrop-blur-md transition lg:z-60">
+        <div className="container mx-auto flex items-center justify-between px-6 py-3">
+          {/* Logo */}
           <div>
-            <Link to="/" className="text-2xl font-medium">
-              Rabbit
+            <Link
+              to="/"
+              className="text-primary text-2xl font-bold tracking-tight"
+            >
+              Buytopia
             </Link>
           </div>
-          <div className="hidden space-x-6 md:flex">
+          {/* Desktop Nav */}
+          <div className="hidden items-center gap-6 md:flex">
             <Link
               to="/collections/all?gender=Men"
-              className="text-sm font-medium text-gray-700 uppercase hover:text-black"
+              className="text-muted-foreground hover:text-primary text-sm font-medium uppercase transition-colors"
             >
               Men
             </Link>
             <Link
               to="/collections/all?gender=Women"
-              className="text-sm font-medium text-gray-700 uppercase hover:text-black"
+              className="text-muted-foreground hover:text-primary text-sm font-medium uppercase transition-colors"
             >
               Women
             </Link>
             <Link
               to="/collections/all?category=Top Wear"
-              className="text-sm font-medium text-gray-700 uppercase hover:text-black"
+              className="text-muted-foreground hover:text-primary text-sm font-medium uppercase transition-colors"
             >
               Top Wear
             </Link>
             <Link
               to="/collections/all?category=Bottom Wear"
-              className="text-sm font-medium text-gray-700 uppercase hover:text-black"
+              className="text-muted-foreground hover:text-primary text-sm font-medium uppercase transition-colors"
             >
               Bottom Wear
             </Link>
@@ -65,80 +72,100 @@ const Navbar = () => {
           {/* Right - Icons */}
           <div className="flex items-center gap-4">
             {user && user.role === "admin" && (
-              <Link
-                to="/admin"
-                className="rounded-full bg-gradient-to-r from-black to-gray-800 px-4 py-1 text-sm font-semibold text-white shadow transition hover:from-gray-800 hover:to-black"
-              >
-                Admin
-              </Link>
+              <Button asChild size="sm" className="font-semibold">
+                <Link to="/admin">Admin</Link>
+              </Button>
             )}
             <Link to="/profile" className="group relative">
-              <HiOutlineUser className="size-7 text-gray-700 transition group-hover:text-black" />
-              {/* Optionally, show avatar or initials here */}
+              <HiOutlineUser className="text-muted-foreground group-hover:text-primary size-7 transition" />
             </Link>
-            <button className="group relative" onClick={toggleCartDrawer}>
-              <HiOutlineShoppingBag className="size-7 text-gray-700 transition group-hover:text-black" />
+            <Button
+              variant="ghost"
+              className="relative p-2"
+              onClick={toggleCartDrawer}
+              aria-label="Open cart"
+            >
+              <HiOutlineShoppingBag className="text-muted-foreground group-hover:text-primary size-7 transition" />
               {cartItemCount > 0 && (
-                <span className="bg-rabbit-red absolute -top-2 -right-2 animate-bounce rounded-full px-2 py-0.5 text-xs text-white shadow-lg">
+                <span className="bg-primary absolute -top-2 -right-2 animate-bounce rounded-full px-2 py-0.5 text-xs text-white shadow-lg">
                   {cartItemCount}
                 </span>
               )}
-            </button>
+            </Button>
             {/* Search */}
             <div className="overflow-hidden rounded-full bg-white px-2 py-1 shadow">
               <SearchBar />
             </div>
-            <button className="md:hidden" onClick={toggleNavDrawer}>
-              <HiBars3BottomRight className="size-7 text-gray-700 transition hover:text-black" />
-            </button>
+            {/* Mobile Menu Trigger */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden"
+                  aria-label="Open menu"
+                >
+                  <HiBars3BottomRight className="text-muted-foreground hover:text-primary size-7 transition" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0">
+                <div className="flex h-full flex-col">
+                  <div className="flex items-center justify-between border-b p-4">
+                    <SheetTitle className="text-xl font-semibold">
+                      Menu
+                    </SheetTitle>
+                    <SheetClose asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Close menu"
+                      >
+                        <span className="sr-only">Close</span>
+                        {/* The Sheet component already includes a close icon, so this is for accessibility */}
+                      </Button>
+                    </SheetClose>
+                  </div>
+                  <nav className="flex flex-col gap-4 p-4">
+                    <SheetClose asChild>
+                      <Link
+                        to="/collections/all?gender=Men"
+                        className="text-muted-foreground hover:text-primary block transition-colors"
+                      >
+                        Men
+                      </Link>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <Link
+                        to="/collections/all?gender=Women"
+                        className="text-muted-foreground hover:text-primary block transition-colors"
+                      >
+                        Women
+                      </Link>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <Link
+                        to="/collections/all?category=Top Wear"
+                        className="text-muted-foreground hover:text-primary block transition-colors"
+                      >
+                        Top Wear
+                      </Link>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <Link
+                        to="/collections/all?category=Bottom Wear"
+                        className="text-muted-foreground hover:text-primary block transition-colors"
+                      >
+                        Bottom Wear
+                      </Link>
+                    </SheetClose>
+                  </nav>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </nav>
       <CartDrawer drawerOpen={drawerOpen} toggleCartDrawer={toggleCartDrawer} />
-
-      {/* Mobile navigation */}
-      <div
-        className={`fixed top-0 left-0 z-50 h-full w-3/4 transform bg-white shadow-lg transition-transform duration-300 sm:w-1/2 md:w-1/3 ${navDrawerOpen ? "translate-x-0" : "-translate-x-full"}`}
-      >
-        <div className="flex justify-end p-4">
-          <button onClick={toggleNavDrawer}>
-            <IoMdClose className="h-6 w-6 text-gray-600" />
-          </button>
-        </div>
-        <div className="p-4">
-          <h2 className="mb-4 text-xl font-semibold">Menu</h2>
-          <nav className="space-y-4">
-            <Link
-              to="/collections/all?gender=Men"
-              onClick={toggleNavDrawer}
-              className="block text-gray-600 hover:text-black"
-            >
-              Men
-            </Link>
-            <Link
-              to="/collections/all?gender=Women"
-              onClick={toggleNavDrawer}
-              className="block text-gray-600 hover:text-black"
-            >
-              Women
-            </Link>
-            <Link
-              to="/collections/all?category=Top Wear"
-              onClick={toggleNavDrawer}
-              className="block text-gray-600 hover:text-black"
-            >
-              Top Wear
-            </Link>
-            <Link
-              to="/collections/all?category=Bottom Wear"
-              onClick={toggleNavDrawer}
-              className="block text-gray-600 hover:text-black"
-            >
-              Bottom Wear
-            </Link>
-          </nav>
-        </div>
-      </div>
     </>
   );
 };

@@ -10,6 +10,19 @@ const ProductGrid = ({ products, loading, error }) => {
   if (error) {
     return <ErrorAlert message={error} />;
   }
+
+  if (!products || products.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <p className="text-muted-foreground text-center text-lg font-medium">
+          No products found matching your filters.
+          <br />
+          Try adjusting your filters or check back later.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       {products.map((product, index) => (
